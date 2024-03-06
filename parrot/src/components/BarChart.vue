@@ -1,5 +1,8 @@
 <template>
-  <Bar id="my-chart-id" :options="chartOptions" :data="chartData" />
+  <main>
+    <h1>{{ this.getTianLength }}</h1>
+    <Bar id="my-chart-id" :options="chartOptions" :data="chartData" />
+  </main>
 </template>
 
 <script>
@@ -11,13 +14,17 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 export default {
   name: "BarChart",
   components: { Bar },
+  props: {
+    data: Array,
+    labels: Array,
+  },
   data() {
     return {
       chartData: {
-        labels: ["lawrence", "tian lang chen", "jay"],
+        labels: this.labels,
         datasets: [
           {
-            data: [1, 200, 2],
+            data: this.data,
             label: "jump height in cm",
             borderWidth: 2,
             borderColor: "red",
@@ -35,6 +42,11 @@ export default {
         },
       },
     };
+  },
+  computed: {
+    getTianLength() {
+      return `tian lang says the length is ${this.data.length}0`;
+    },
   },
 };
 </script>
