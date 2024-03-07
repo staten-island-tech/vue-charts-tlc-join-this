@@ -1,14 +1,9 @@
-<script>
-import '@/components/TLCtesting.vue'
-import TLCtesting from '@/components/TLCtesting.vue'
-export default {
-  name: 'App',
-  components: { TLCtesting }
-}
+<script setup>
+import BarChart from '../components/BarChart.vue'
 </script>
 
 <template>
   <main>
-    <TLCtesting />
+    <BarChart />
   </main>
 </template>
