@@ -5,9 +5,9 @@ const router = createRouter({
   routes: [
     { path: "/", name: "home", component: HomeView },
     {
-      path: "/powerscaling",
-      name: "powerscaling",
-      component: () => import("../views/PowerScaling.vue"),
+      path: "/babynames",
+      name: "babynames",
+      component: () => import("../views/BabyNames.vue"),
     },
   ],
 });
