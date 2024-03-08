@@ -17,7 +17,7 @@ export default {
         labels: ["lawrence", "tian lang chen", "jay"],
         datasets: [
           {
-            data: [1, 200, 2],
+            data: [1, 20, 2],
             label: "jump height in cm",
             borderWidth: 2,
             borderColor: "red",

@@ -3,34 +3,32 @@
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale
-} from 'chart.js'
+const data = "https://data.cityofnewyork.us/resource/wffy-3iyg.json";
+async function getData() {
+  const data = fetch("https://data.cityofnewyork.us/resource/wffy-3iyg.json");
+  const get = (await data).json;
+}
+const list = [1, 2, 3, 4, 5];
+const cat = true;
+import { Bar } from "vue-chartjs";
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 export default {
-  name: 'BarChart',
+  name: "BarChart",
   components: { Bar },
-  data() {
-    return {
-      chartData: {
-        labels: ['January', 'February', 'March'],
-        datasets: [{ data: [40, 20, 12] }]
-      },
-      chartOptions: {
-        responsive: true
-      }
-    }
-  }
-}
+  props: {
+    chartData: {
+      type: Object,
+      required: true,
+    },
+    chartOptions: {
+      type: Object,
+      default: () => {},
+    },
+  },
+};
 </script>
 
 <style scoped></style>
