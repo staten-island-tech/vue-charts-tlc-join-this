@@ -5,6 +5,6 @@ import TLCtesting from "@/components/TLCtesting.vue";
 
 <template>
   <main>
-    <BarChart />
+    <TLCtesting />
   </main>
 </template>
