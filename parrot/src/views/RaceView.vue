@@ -13,15 +13,14 @@ async function babystealing() {
     }
     const data = await response.json();
     babystuff.push(data);
-    console.log(babystuff);
   } catch (error) {}
 }
 
 onMounted(async () => {
   await babystealing();
-
-  const white = babystuff.filter((race) => {
-    return race["race_or_ethnicity_of_mother"] === "Hispanic";
+  console.log(babystuff);
+  const white = babystuff[0].filter((el) => {
+    return el.race_or_ethnicity_of_mother === "Hispanic";
   });
 
   console.log(white);
