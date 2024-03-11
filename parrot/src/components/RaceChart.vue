@@ -9,15 +9,20 @@
   <script>
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
-
-
 ChartJS.register(ArcElement, Tooltip, Legend)
 
+
 export default {
+  props: (['racelabels'], ['racedata']),
+  created(){
+    console.log(this.racelabels, this.racedata)
+  },
+  
   name: 'PieChart',
   components: {
     Doughnut
   },  
+  // https://vuejs.org/guide/components/props.html options api
   data() {
     return {
       chartData: {
