@@ -1,46 +1,43 @@
 <template>
-    <main>
-        <Doughnut 
-        :data="chartData" 
-        :options="chartOptions" />
-    </main>
-  </template>
-  
-  <script>
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Doughnut } from 'vue-chartjs'
-ChartJS.register(ArcElement, Tooltip, Legend)
+  <main>
+    <Doughnut :data="chartData" :options="chartOptions" />
+  </main>
+</template>
 
+<script>
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "vue-chartjs";
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default {
-  props: (['racelabels'], ['racedata']),
-  created(){
-    console.log(this.racelabels, this.racedata)
+  props: ([raceName], [raceData]),
+  created() {
+    console.log(this.racelabels, this.racedata);
   },
-  
-  name: 'PieChart',
+  name: "PieChart",
   components: {
-    Doughnut
-  },  
+    Doughnut,
+  },
   // https://vuejs.org/guide/components/props.html options api
   data() {
     return {
       chartData: {
-        labels: [ 'Red', 'Blue', 'Yellow' ],
-        datasets: [ { 
-          label: "cool",
-          data: [40, 20, 12],
-          backgroundColor: ['rgb(255, 99, 132)','rgb(54, 162, 235)','rgb(255, 205, 86)'],
-          hoverOffset: 4
-        } ]
+        labels: this.raceName,
+        datasets: [
+          {
+            label: "cool",
+            data: this.raceData,
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"],
+            hoverOffset: 4,
+          },
+        ],
       },
       chartOptions: {
-        responsive: true
-      }
-    }
-  }
+        responsive: true,
+      },
+    };
+  },
+};
+</script>
 
-}
-  </script>
-  
-  <style scoped></style>
+<style scoped></style>
