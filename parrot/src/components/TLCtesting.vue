@@ -34,8 +34,8 @@ data.forEach((sort) => createSet(sort, valueList));
 console.log(valueList);
 data2();
 console.log(birthYear, babiesBorn);
-const list = [1, 2, 3, 4, 5];
-const cat = true;
+// const list = [1, 2, 3, 4, 5];
+// const cat = true;
 import { Bar } from "vue-chartjs";
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
 
@@ -46,6 +46,7 @@ export default {
   components: { Bar },
   data() {
     return {
+      height: 1000,
       chartData: {
         labels: birthYear,
         datasets: [
