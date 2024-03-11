@@ -21,13 +21,14 @@
         <input type="number" id="brth_yr" v-model="filters.brth_yr" value="2015" />
       </label>
     </div>
-    <code v-if="loaded">{{ babies }}</code>
+    <PieChart v-if="loaded" :data="Object.values(babyNames)" :labels="Object.keys(babyNames)">{{ babies }}</PieChart>
     <h1 v-else>wait... i am consulting all of New York's babies</h1>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref, reactive } from "vue";
+import PieChart from "@/components/PieChart.vue";
 const loaded = ref(false);
 let cache = {};
 let data = [];
@@ -48,7 +49,6 @@ const filters = reactive({
 async function getBabiesOfYear(year) {
   loaded.value = false;
   if (cache.hasOwnProperty(year)) {
-    loaded.value = true;
     return cache[year];
   }
 
@@ -58,7 +58,6 @@ async function getBabiesOfYear(year) {
     if (jData.hasOwnProperty("error")) {
       throw new Error(`api error :( - ${jData.message}`);
     }
-    loaded.value = true;
     cache[year] = jData;
     console.log(jData);
     return jData;
@@ -68,10 +67,10 @@ async function getBabiesOfYear(year) {
   }
 }
 
-async function refetch() {
-  console.log("reloading");
+async function fetchData() {
   data = await getBabiesOfYear(filters.brth_yr);
-  babies.value = data;
+  babyNames = {};
+  countBabies(data);
 }
 
 // get all possible values of a column
@@ -81,23 +80,30 @@ function getValuesOfColumn(column, data) {
 }
 
 async function filter() {
-  await refetch();
-  console.log([filters]);
+  await fetchData();
   for (const key in filters) {
     data = filterBy(data, key, filters[key]);
   }
   babies.value = data;
 }
 
+let babyNames = {};
+function countBabies(data) {
+  data.forEach((baby) => {
+    babyNames[baby.nm] ??= 0;
+    babyNames[baby.nm]++;
+  });
+  loaded.value = true;
+}
+
 function filterBy(data, property, value) {
   if (value === "all") return data;
-
   console.log(property);
   return data.filter((baby) => String(baby[property]) === String(value));
 }
 
 onMounted(async () => {
-  data = await getBabiesOfYear(2015);
+  await fetchData();
   options.ethcty = getValuesOfColumn("ethcty", data);
   options.gndr = getValuesOfColumn("gndr", data);
   options.brth_yr = getValuesOfColumn("brth_yr", data);
