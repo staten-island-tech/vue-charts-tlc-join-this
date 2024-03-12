@@ -1,27 +1,23 @@
 <template>
   <div id="container">
     <!-- when anything in this div changes, @change will be run -->
-    <div id="controls" @change="filter">
+    <div id="controls" @change="reload">
       <label>
-        select a race
-        <select id="ethcty" v-model="filters.ethcty">
-          <option v-for="race in options.ethcty" :key="race">{{ race }}</option>
-          <option>all</option>
+        select a name
+        <select id="nm" v-model="nm">
+          <option v-for="name in Object.keys(babyNames)" :key="name">{{ name }}</option>
         </select>
       </label>
       <label>
-        select a gender
-        <select id="gndr" v-model="filters.gndr">
-          <option v-for="gender in options.gndr" :key="gender">{{ gender }}</option>
-          <option>all</option>
-        </select>
+        year min
+        <input type="number" id="brth_yr_min" v-model="filters.brth_yr_min" />
       </label>
       <label>
-        year
-        <input type="number" id="brth_yr" v-model="filters.brth_yr" value="2015" />
+        year max
+        <input type="number" id="brth_yr_max" v-model="filters.brth_yr_max" />
       </label>
     </div>
-    <PieChart v-if="loaded" :data="Object.values(babyNames)" :labels="Object.keys(babyNames)">{{ babies }}</PieChart>
+    <PieChart v-if="loaded" :data="Object.values(babyNames[nm])" :labels="Object.keys(babyNames[nm])">{{ babies }}</PieChart>
     <h1 v-else>wait... i am consulting all of New York's babies</h1>
   </div>
 </template>
@@ -33,21 +29,36 @@ const loaded = ref(false);
 let cache = {};
 let data = [];
 const babies = ref(null);
-
-const options = reactive({
-  brth_yr: [],
-  ethcty: [],
-  gndr: [],
-});
+let babyNames = reactive({});
 
 const filters = reactive({
-  brth_yr: "2015",
-  ethcty: "all",
-  gndr: "all",
+  brth_yr_min: "2015",
+  brth_yr_max: "2015",
 });
+const nm = ref("");
+
+async function reload() {
+  loaded.value = false;
+  data = [];
+  for (let i = Number(filters.brth_yr_min); i <= Number(filters.brth_yr_max); i++) {
+    console.log(i);
+    data.push(...(await getBabiesOfYear(i)));
+  }
+  babyNames = {};
+  getValuesOfColumn("nm", data).forEach((name) => {
+    babyNames[name] = {};
+  });
+  if (!nm.value) {
+    console.log("there is no name");
+    nm.value = Object.keys(babyNames)[0];
+    console.log("selected", nm.value);
+  }
+  countRaces();
+  console.log(Object.keys(babyNames).length);
+  loaded.value = true;
+}
 
 async function getBabiesOfYear(year) {
-  loaded.value = false;
   if (cache.hasOwnProperty(year)) {
     return cache[year];
   }
@@ -67,33 +78,18 @@ async function getBabiesOfYear(year) {
   }
 }
 
-async function fetchData() {
-  data = await getBabiesOfYear(filters.brth_yr);
-  babyNames = {};
-  countBabies(data);
+function countRaces() {
+  data.forEach((baby) => {
+    babyNames[baby.nm][baby.ethcty] ??= 0;
+    babyNames[baby.nm][baby.ethcty] += Number(baby.cnt);
+  });
+  console.log(babyNames);
 }
 
 // get all possible values of a column
 function getValuesOfColumn(column, data) {
   // sort by alphabet + remove duplicates
   return new Set(data.map((baby) => baby[column]).sort());
-}
-
-async function filter() {
-  await fetchData();
-  for (const key in filters) {
-    data = filterBy(data, key, filters[key]);
-  }
-  babies.value = data;
-}
-
-let babyNames = {};
-function countBabies(data) {
-  data.forEach((baby) => {
-    babyNames[baby.nm] ??= 0;
-    babyNames[baby.nm]++;
-  });
-  loaded.value = true;
 }
 
 function filterBy(data, property, value) {
@@ -103,12 +99,7 @@ function filterBy(data, property, value) {
 }
 
 onMounted(async () => {
-  await fetchData();
-  options.ethcty = getValuesOfColumn("ethcty", data);
-  options.gndr = getValuesOfColumn("gndr", data);
-  options.brth_yr = getValuesOfColumn("brth_yr", data);
-  // evil ternary strikes again
-  babies.value = data.length ? data : "there is no data...";
+  await reload();
 });
 </script>
 
