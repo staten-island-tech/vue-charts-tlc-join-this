@@ -28,14 +28,24 @@ function createSet(array, set) {
 function data2() {
   valueList.forEach((sort) => getOccurrence(list2, sort));
 }
+
+function filterByYear(list, value) {
+  let filterlist = null;
+  let babies = 0;
+  filterlist = list.filter((filtering) => filtering.birth_year === value);
+  filterlist.forEach((push) => (babies += parseInt(push.births)));
+  console.log(filterlist);
+  birthYear.push(value);
+  babiesBorn.push(babies);
+}
 await getData();
 
 data.forEach((sort) => createSet(sort, valueList));
 console.log(valueList);
-data2();
+// data2();
 console.log(birthYear, babiesBorn);
-const list = [1, 2, 3, 4, 5];
-const cat = true;
+
+valueList.forEach((add) => filterByYear(data, add));
 import { Bar } from "vue-chartjs";
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
 
