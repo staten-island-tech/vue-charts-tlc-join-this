@@ -42,7 +42,7 @@ await getData();
 
 data.forEach((sort) => createSet(sort, valueList));
 console.log(valueList);
-// data2();
+
 console.log(birthYear, babiesBorn);
 
 valueList.forEach((add) => filterByYear(data, add));
