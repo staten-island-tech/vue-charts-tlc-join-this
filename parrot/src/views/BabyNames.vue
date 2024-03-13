@@ -54,11 +54,10 @@ async function reload() {
     console.log("selected", nm.value);
   }
   countRaces();
-  console.log(Object.keys(babyNames).length);
   loaded.value = true;
 }
 
-async function getBabiesOfYear(year) {
+async function fetchData(year) {
   if (cache.hasOwnProperty(year)) {
     return cache[year];
   }
@@ -69,6 +68,15 @@ async function getBabiesOfYear(year) {
     if (jData.hasOwnProperty("error")) {
       throw new Error(`api error :( - ${jData.message}`);
     }
+    const nameMap = {
+      "ASIAN AND PACI": "ASIAN AND PACIFIC ISLANDER",
+      "BLACK NON HISP": "BLACK NON HISPANIC",
+      "WHITE NON HISP": "WHITE NON HISPANIC",
+    };
+    // jData.forEach((baby) => {
+    //   baby.nm = baby.nm.toUpperCase();
+    //   baby.ethcty = nameMap[baby.ethcty] ?? baby.ethcty;
+    // });
     cache[year] = jData;
     console.log(jData);
     return jData;
@@ -79,17 +87,12 @@ async function getBabiesOfYear(year) {
 }
 
 function countRaces() {
+  console.log(getValuesOfColumn("ethcty", data));
   data.forEach((baby) => {
     babyNames[baby.nm][baby.ethcty] ??= 0;
     babyNames[baby.nm][baby.ethcty] += Number(baby.cnt);
   });
   console.log(babyNames);
-}
-
-// get all possible values of a column
-function getValuesOfColumn(column, data) {
-  // sort by alphabet + remove duplicates
-  return new Set(data.map((baby) => baby[column]).sort());
 }
 
 function filterBy(data, property, value) {
@@ -99,6 +102,12 @@ function filterBy(data, property, value) {
 }
 
 onMounted(async () => {
+  let yearData = await fetch(
+    `https://data.cityofnewyork.us/resource/25th-nujf.json?$query=SELECT%20%60brth_yr%60%20GROUP%20BY%20%60brth_yr%60&$$app_token=vPn84B6xK76CNcZ4XvQH3Oz0j`
+  );
+  test = await test.json();
+  console.log(test);
+  console.log(test.map((year) => Number(year.brth_yr)).sort((a, b) => a - b));
   await reload();
 });
 </script>
