@@ -8,14 +8,6 @@
           <option v-for="name in Object.keys(babyNames)" :key="name">{{ name }}</option>
         </select>
       </label>
-      <label>
-        year min
-        <input type="number" id="brth_yr_min" v-model="filters.brth_yr_min" />
-      </label>
-      <label>
-        year max
-        <input type="number" id="brth_yr_max" v-model="filters.brth_yr_max" />
-      </label>
     </div>
     <PieChart v-if="loaded" :data="Object.values(babyNames[nm])" :labels="Object.keys(babyNames[nm])">{{ babies }}</PieChart>
     <h1 v-else>wait... i am consulting all of New York's babies</h1>
@@ -26,44 +18,23 @@
 import { onMounted, ref, reactive } from "vue";
 import PieChart from "@/components/PieChart.vue";
 const loaded = ref(false);
-let cache = {};
 let data = [];
 const babies = ref(null);
 let babyNames = reactive({});
-
-const filters = reactive({
-  brth_yr_min: "2015",
-  brth_yr_max: "2015",
-});
+let years = reactive([]);
 const nm = ref("");
 
 async function reload() {
   loaded.value = false;
-  data = [];
-  for (let i = Number(filters.brth_yr_min); i <= Number(filters.brth_yr_max); i++) {
-    console.log(i);
-    data.push(...(await getBabiesOfYear(i)));
-  }
-  babyNames = {};
-  getValuesOfColumn("nm", data).forEach((name) => {
-    babyNames[name] = {};
-  });
-  if (!nm.value) {
-    console.log("there is no name");
-    nm.value = Object.keys(babyNames)[0];
-    console.log("selected", nm.value);
-  }
-  countRaces();
+  const data = await fetchData(nm);
+  countRaces(data);
   loaded.value = true;
 }
 
-async function fetchData(year) {
-  if (cache.hasOwnProperty(year)) {
-    return cache[year];
-  }
-
+async function fetchData(name) {
   try {
-    const fData = await fetch(`https://data.cityofnewyork.us/resource/25th-nujf.json?brth_yr=${year}&$limit=50000&$$app_token=vPn84B6xK76CNcZ4XvQH3Oz0j`);
+    const fData = await fetch(`https://data.cityofnewyork.us/resource/25th-nujf.json?nm=${name}&$limit=50000&$$app_token=vPn84B6xK76CNcZ4XvQH3Oz0j`);
+
     const jData = await fData.json();
     if (jData.hasOwnProperty("error")) {
       throw new Error(`api error :( - ${jData.message}`);
@@ -73,11 +44,10 @@ async function fetchData(year) {
       "BLACK NON HISP": "BLACK NON HISPANIC",
       "WHITE NON HISP": "WHITE NON HISPANIC",
     };
-    // jData.forEach((baby) => {
-    //   baby.nm = baby.nm.toUpperCase();
-    //   baby.ethcty = nameMap[baby.ethcty] ?? baby.ethcty;
-    // });
-    cache[year] = jData;
+    jData.forEach((baby) => {
+      baby.nm = baby.nm.toUpperCase();
+      baby.ethcty = nameMap[baby.ethcty] ?? baby.ethcty;
+    });
     console.log(jData);
     return jData;
   } catch (e) {
@@ -86,11 +56,10 @@ async function fetchData(year) {
   }
 }
 
-function countRaces() {
-  console.log(getValuesOfColumn("ethcty", data));
+function countRaces(data) {
   data.forEach((baby) => {
-    babyNames[baby.nm][baby.ethcty] ??= 0;
-    babyNames[baby.nm][baby.ethcty] += Number(baby.cnt);
+    data[baby.ethcty] ??= 0;
+    data[baby.ethcty] += Number(baby.cnt);
   });
   console.log(babyNames);
 }
@@ -101,13 +70,24 @@ function filterBy(data, property, value) {
   return data.filter((baby) => String(baby[property]) === String(value));
 }
 
-onMounted(async () => {
-  let yearData = await fetch(
-    `https://data.cityofnewyork.us/resource/25th-nujf.json?$query=SELECT%20%60brth_yr%60%20GROUP%20BY%20%60brth_yr%60&$$app_token=vPn84B6xK76CNcZ4XvQH3Oz0j`
+async function getValuesOfColumn(column) {
+  // EVIL spaces in a url
+  const response = await fetch(
+    `https://data.cityofnewyork.us/resource/25th-nujf.json?$query=SELECT ${column} GROUP BY ${column} LIMIT 50000&$$app_token=vPn84B6xK76CNcZ4XvQH3Oz0j&`
   );
-  test = await test.json();
-  console.log(test);
-  console.log(test.map((year) => Number(year.brth_yr)).sort((a, b) => a - b));
+  return await response.json();
+}
+
+onMounted(async () => {
+  const yearData = await getValuesOfColumn("brth_yr");
+  years = yearData.map((year) => Number(year.brth_yr)).sort((a, b) => a - b);
+  const names = await getValuesOfColumn("nm");
+  babyNames = names.map((name) => name.nm.toUpperCase()).sort();
+  if (!nm.value) {
+    console.log("there is no name");
+    nm.value = Object.keys(babyNames)[0];
+    console.log("selected", nm.value);
+  }
   await reload();
 });
 </script>
