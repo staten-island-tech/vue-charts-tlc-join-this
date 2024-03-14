@@ -5,11 +5,11 @@
       <label>
         select a name
         <select id="nm" v-model="nm">
-          <option v-for="name in Object.keys(babyNames)" :key="name">{{ name }}</option>
+          <option v-for="name in babyNames" :key="name">{{ name }}</option>
         </select>
       </label>
     </div>
-    <PieChart v-if="loaded" :data="Object.values(babyNames[nm])" :labels="Object.keys(babyNames[nm])">{{ babies }}</PieChart>
+    <PieChart v-if="loaded" :data="Object.values(data)" :labels="Object.keys(data)">{{ babies }}</PieChart>
     <h1 v-else>wait... i am consulting all of New York's babies</h1>
   </div>
 </template>
@@ -18,22 +18,25 @@
 import { onMounted, ref, reactive } from "vue";
 import PieChart from "@/components/PieChart.vue";
 const loaded = ref(false);
-let data = [];
+let data = reactive({});
 const babies = ref(null);
-let babyNames = reactive({});
+let babyNames = reactive([]);
 let years = reactive([]);
 const nm = ref("");
 
 async function reload() {
   loaded.value = false;
-  const data = await fetchData(nm);
-  countRaces(data);
+  console.log(nm.value);
+  const d = await fetchData(nm.value);
+  countRaces(d);
   loaded.value = true;
 }
 
 async function fetchData(name) {
   try {
-    const fData = await fetch(`https://data.cityofnewyork.us/resource/25th-nujf.json?nm=${name}&$limit=50000&$$app_token=vPn84B6xK76CNcZ4XvQH3Oz0j`);
+    const fData = await fetch(
+      `https://data.cityofnewyork.us/resource/25th-nujf.json?$query=SELECT%20%60brth_yr%60%2C%20%60gndr%60%2C%20%60ethcty%60%2C%20%60nm%60%2C%20%60cnt%60%2C%20%60rnk%60%0AWHERE%20caseless_eq(%60nm%60%2C%20%22${name}%22)%0AORDER%20BY%0A%20%20%60brth_yr%60%20DESC%20NULL%20FIRST%2C%0A%20%20%60gndr%60%20ASC%20NULL%20LAST%2C%0A%20%20%60ethcty%60%20ASC%20NULL%20LAST%2C%0A%20%20%60rnk%60%20ASC%20NULL%20LAST`
+    );
 
     const jData = await fData.json();
     if (jData.hasOwnProperty("error")) {
@@ -48,7 +51,6 @@ async function fetchData(name) {
       baby.nm = baby.nm.toUpperCase();
       baby.ethcty = nameMap[baby.ethcty] ?? baby.ethcty;
     });
-    console.log(jData);
     return jData;
   } catch (e) {
     // probably should have better error handling
@@ -56,12 +58,11 @@ async function fetchData(name) {
   }
 }
 
-function countRaces(data) {
-  data.forEach((baby) => {
+function countRaces(nmData) {
+  nmData.forEach((baby) => {
     data[baby.ethcty] ??= 0;
     data[baby.ethcty] += Number(baby.cnt);
   });
-  console.log(babyNames);
 }
 
 function filterBy(data, property, value) {
@@ -81,13 +82,15 @@ async function getValuesOfColumn(column) {
 onMounted(async () => {
   const yearData = await getValuesOfColumn("brth_yr");
   years = yearData.map((year) => Number(year.brth_yr)).sort((a, b) => a - b);
+
   const names = await getValuesOfColumn("nm");
-  babyNames = names.map((name) => name.nm.toUpperCase()).sort();
+  babyNames = Array.from(new Set(names.map((name) => name.nm.toUpperCase()))).sort();
   if (!nm.value) {
     console.log("there is no name");
-    nm.value = Object.keys(babyNames)[0];
+    nm.value = babyNames[0];
     console.log("selected", nm.value);
   }
+
   await reload();
 });
 </script>
