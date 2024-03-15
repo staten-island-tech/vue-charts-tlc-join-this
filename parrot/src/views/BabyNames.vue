@@ -29,6 +29,7 @@ async function reload() {
   console.log(nm.value);
   const d = await fetchData(nm.value);
   countRaces(d);
+  console.log(data);
   loaded.value = true;
 }
 
@@ -59,16 +60,11 @@ async function fetchData(name) {
 }
 
 function countRaces(nmData) {
+  data = {};
   nmData.forEach((baby) => {
     data[baby.ethcty] ??= 0;
     data[baby.ethcty] += Number(baby.cnt);
   });
-}
-
-function filterBy(data, property, value) {
-  if (value === "all") return data;
-  console.log(property);
-  return data.filter((baby) => String(baby[property]) === String(value));
 }
 
 async function getValuesOfColumn(column) {
