@@ -34,7 +34,7 @@ function filterByYear(list, value) {
   let filterlist = null;
   let babies = 0;
   filterlist = list.filter((filtering) => filtering.birth_year === value);
-  filterlist.forEach((push) => (babies += parseInt(push.births)));
+  filterlist.forEach((push) => (babies += Number(push.births)));
   console.log(filterlist);
   birthYear.push(value);
   babiesBorn.push(babies);
