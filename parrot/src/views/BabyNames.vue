@@ -79,8 +79,7 @@ onMounted(async () => {
   const yearData = await getValuesOfColumn("brth_yr");
   years = yearData.map((year) => Number(year.brth_yr)).sort((a, b) => a - b);
 
-  const names = await getValuesOfColumn("nm");
-  babyNames = Array.from(new Set(names.map((name) => name.nm.toUpperCase()))).sort();
+  babyNames = Array.from(new Set((await getValuesOfColumn("nm")).map((name) => name.nm.toUpperCase()))).sort();
   if (!nm.value) {
     console.log("there is no name");
     nm.value = babyNames[0];
