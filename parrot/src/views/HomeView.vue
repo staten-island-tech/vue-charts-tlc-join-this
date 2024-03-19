@@ -21,8 +21,11 @@ const object2 = {
  -->
 
 <template>
-  <div class="container">
-    <Bar v-if="loaded" :data="chartData" />
+  <div class="container" v-if="loaded">
+    <Bar :data="chartData" />
+    <select name="" id="">
+      <option v-for="year in birthYear" :key="year">{{ year }}</option>
+    </select>
   </div>
 </template>
 
@@ -32,12 +35,6 @@ const valueList = new Set();
 let data = null;
 let birthYear = [];
 let babiesBorn = [];
-async function getData() {
-  const response = await fetch("https://data.cityofnewyork.us/resource/wffy-3iyg.json");
-  data = await response.json();
-  console.log(data);
-  data.forEach((call) => list2.push(call.birth_year));
-}
 
 import { Bar } from "vue-chartjs";
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
@@ -55,7 +52,34 @@ export default {
     this.loaded = false;
 
     try {
+      async function getData() {
+        const response = await fetch("https://data.cityofnewyork.us/resource/wffy-3iyg.json");
+        data = await response.json();
+        console.log(data);
+        data.forEach((call) => list2.push(call.birth_year));
+      }
       await getData();
+
+      function createSet(array, set) {
+        set.add(array.birth_year);
+      }
+
+      function filterByYear(list, value) {
+        let filterlist = null;
+        let babies = 0;
+        filterlist = list.filter((filtering) => filtering.birth_year === value);
+        filterlist.forEach((push) => (babies += parseInt(push.births)));
+        console.log(filterlist);
+        birthYear.push(value);
+        babiesBorn.push(babies);
+      }
+
+      data.forEach((sort) => createSet(sort, valueList));
+      console.log(valueList);
+
+      console.log(birthYear, babiesBorn);
+
+      valueList.forEach((add) => filterByYear(data, add));
       this.chartData = {
         labels: birthYear,
         datasets: [
@@ -75,38 +99,10 @@ export default {
           },
         ],
       };
-
       this.loaded = true;
     } catch (e) {
       console.error(e);
     }
-
-    function getOccurrence(array, value) {
-      console.log(value, array.filter((v) => v === value).length);
-      birthYear.push(value);
-      babiesBorn.push(array.filter((v) => v === value).length);
-    }
-
-    function createSet(array, set) {
-      set.add(array.birth_year);
-    }
-
-    function filterByYear(list, value) {
-      let filterlist = null;
-      let babies = 0;
-      filterlist = list.filter((filtering) => filtering.birth_year === value);
-      filterlist.forEach((push) => (babies += parseInt(push.births)));
-      console.log(filterlist);
-      birthYear.push(value);
-      babiesBorn.push(babies);
-    }
-
-    data.forEach((sort) => createSet(sort, valueList));
-    console.log(valueList);
-
-    console.log(birthYear, babiesBorn);
-
-    valueList.forEach((add) => filterByYear(data, add));
   },
 };
 </script>
