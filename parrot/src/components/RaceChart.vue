@@ -40,12 +40,12 @@ async function filtering() {
   await babystealing();
   babystuff2.forEach((baby) => applesauce.add(baby.birth_year));
   isFetching.value = false;
-  console.log(applesauce);
+
   babystuff = babystuff2.filter((baby) => baby.birth_year);
 }
 
 await filtering();
-console.log(babystuff);
+
 
 babystuff.forEach((baby) => {
   // if it doesn't already exist, create empty array
@@ -53,10 +53,10 @@ babystuff.forEach((baby) => {
   // add baby
   raceData[baby.race_or_ethnicity_of_mother].push(baby);
 });
-console.log(raceData);
+
 const a = new Array(6); //new Empty array
 a.fill(0);
-console.log(a);
+
 
 races = Object.keys(raceData);
 
@@ -66,8 +66,7 @@ races = Object.keys(raceData);
 babystuff.forEach((baby) => {
   a[races.indexOf(baby.race_or_ethnicity_of_mother)] += Number(baby.births); // births was a STRING
 });
-console.log(races);
-console.log(a);
+
 
 export default {
   name: "byRace",
