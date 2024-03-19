@@ -1,40 +1,85 @@
 <template>
-  <div class="container">
-    <!--when change occurs inside, @change runs-->
-    <div class="controls" @change="refreshchart">
-      <label> Select a filter </label>
-      <select name="pies" id="pies" v-model="filter">
-        <optgroup label="Year">
-          <option value="nuhuh">No Filter</option>
-          <option v-for="year in applesauce" :key="year">{{ year }}</option>
-        </optgroup>
-      </select>
+  <main>
+    <div class="big">
+      <div class="small" @change="rechart">
+        <label>
+          Select a Filter
+          <select id="selection" v-model="selectyear">
+            <option value="nuhuh">No Filter</option>
+            <option v-for="year in years" :key="year">{{ year }}</option>
+          </select>
+        </label>
+      </div>
+      <Chart v-if="loaded" :data="Object.values(data)" :labels="Object.keys(data)" />
+      <h1 v-else>wait ........</h1>
     </div>
-    <Doughnut v-if="loaded" :data="Object.values(data)" :labels="Object.keys(data)" />
-    <h1 v-else>... ... ... ... wait.</h1>
-  </div>
+  </main>
 </template>
 
 <script setup>
-import Doughnut from "../components/DoChart.vue";
+// ⠀ ／l、
+// （ﾟ､ ｡ ７ tiger cat
+// ⠀ l、ﾞ ~ヽ
+//   じしf_, )ノ
+import Chart from "../components/DoChart.vue";
 import { onMounted, ref, reactive } from "vue";
-
 const loaded = ref(false);
+let d = reactive([]);
 let data = reactive({});
+const babies = ref(null); //data
+let years = []; //Array for all years for dropdown select
+const selectyear = ref("nuhuh"); //Selection V-model stuff
 
-async function refreshchart() {
+async function rechart() {
+  data = {}; //empty data
+  babies.value = {};
   loaded.value = false;
-
+  console.log(selectyear.value);
+  if (selectyear.value === "nuhuh") {
+    d = await fetchDataNorm();
+  } else {
+    d = await fetchData(selectyear.value);
+  }
+  d.forEach((baby) => {
+    data[baby.race_or_ethnicity_of_mother] ??= [];
+    data[baby.race_or_ethnicity_of_mother].push(baby);
+  });
+  console.log(data);
+  let races = Object.keys(data);
+  console.log(races);
+  data.forEach((baby) => {
+    babies[races.indexOf(baby.race_or_ethnicity_of_mother)] += Number(baby.births);
+  });
   loaded.value = true;
 }
 
-async function fetchData(year) {
+async function fetchDataNorm() {
+  //all 152 datapoints
   try {
-    const fetchdata = await fetch(
-      "https://data.cityofnewyork.us/resource/wffy-3iyg.json?$query=SELECT%0A%20%20%60birth_year%60%2C%0A%20%20%60sex_of_infant%60%2C%0A%20%20%60race_or_ethnicity_of_mother%60%2C%0A%20%20%60births%60%2C%0A%20%20%660percentage%60%0AWHERE%20%60birth_year%60%20IN%20(%222018%22)%0AORDER%20BY%20%60birth_year%60%20ASC%20NULL%20LAST"
-    );
+    const fetched = await fetch("https://data.cityofnewyork.us/resource/wffy-3iyg.json");
+    const jsondata = await fetched.json();
+    return jsondata;
   } catch (error) {}
 }
+async function fetchData(year) {
+  //filtered datapoints by year
+  try {
+    const fetched = await fetch(
+      `https://data.cityofnewyork.us/resource/wffy-3iyg.json?$query=SELECT%0A%20%20%60birth_year%60%2C%0A%20%20%60sex_of_infant%60%2C%0A%20%20%60race_or_ethnicity_of_mother%60%2C%0A%20%20%60births%60%2C%0A%20%20%60percentage%60%0AWHERE%20%60birth_year%60%20IN%20(${year})%0AORDER%20BY%20%60birth_year%60%20ASC%20NULL%20LAST`
+    );
+    const jsondata = await fetched.json();
+    return jsondata;
+  } catch (error) {}
+}
+
+onMounted(async () => {
+  const fetchYears = await fetch(
+    "https://data.cityofnewyork.us/resource/wffy-3iyg.json?$query=SELECT%20%60birth_year%60%0AGROUP%20BY%20%60birth_year%60%0AORDER%20BY%20%60birth_year%60%20ASC%20NULL%20LAST"
+  );
+  years = await fetchYears.json();
+  years = years.map((yr) => yr.birth_year);
+  await rechart();
+});
 </script>
 
 <style scoped></style>

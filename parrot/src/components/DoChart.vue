@@ -1,19 +1,17 @@
-import { Doughnut } from 'vue-chartjs';
 <template>
-  <Doughnut id="Doughnut" :options="chartOptions" :data="chartData" />
+  <main>
+    <Pie id="my-chart-id" :options="chartOptions" :data="chartData" />
+  </main>
 </template>
 
 <script>
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "vue-chartjs";
-
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default {
-  name: Doughnut,
-  components: {
-    Doughnut,
-  },
+  name: "Doughnut",
+  components: { Doughnut },
   props: {
     data: Array,
     labels: Array,
@@ -30,10 +28,12 @@ export default {
         ],
       },
       chartOptions: {
-        respnosive: true,
+        responsive: true,
       },
       plugins: {},
     };
   },
 };
 </script>
+
+<style scoped></style>

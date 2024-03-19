@@ -36,17 +36,6 @@ async function babystealing() {
   } catch (error) {}
 }
 
-async function filtering() {
-  await babystealing();
-  babystuff2.forEach((baby) => applesauce.add(baby.birth_year));
-  isFetching.value = false;
-  console.log(applesauce);
-  babystuff = babystuff2.filter((baby) => baby.birth_year);
-}
-
-await filtering();
-console.log(babystuff);
-
 babystuff.forEach((baby) => {
   // if it doesn't already exist, create empty array
   raceData[baby.race_or_ethnicity_of_mother] ??= [];
