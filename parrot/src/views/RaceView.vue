@@ -10,7 +10,7 @@
           </select>
         </label>
       </div>
-      <Chart v-if="loaded" :data="Object.values(data)" :labels="Object.keys(data)" />
+      <Chart v-if="loaded" :data="Object.values(babies)" :labels="Object.keys(babies)" />
       <h1 v-else>wait ........</h1>
     </div>
   </main>
@@ -40,16 +40,17 @@ async function rechart() {
   } else {
     d = await fetchData(selectyear.value);
   }
-  d.forEach((baby) => {
+  console.log(d);
+  /*   d.forEach((baby) => {
     data[baby.race_or_ethnicity_of_mother] ??= [];
     data[baby.race_or_ethnicity_of_mother].push(baby);
   });
-  console.log(data);
-  let races = Object.keys(data);
-  console.log(races);
-  data.forEach((baby) => {
-    babies[races.indexOf(baby.race_or_ethnicity_of_mother)] += Number(baby.births);
+  console.log(data); */
+  d.forEach((baby) => {
+    babies[baby.race_or_ethnicity_of_mother] ??= 0;
+    babies[baby.race_or_ethnicity_of_mother] += Number(baby.births);
   });
+  console.log(babies);
   loaded.value = true;
 }
 
