@@ -1,6 +1,8 @@
 <template>
   <main>
     <div class="big">
+      <Chart v-if="loaded" :data="Object.values(babies)" :labels="Object.keys(babies)" />
+      <h1 v-else>wait ........</h1>
       <div class="small" @change="rechart">
         <label>
           Select a Filter
@@ -10,8 +12,6 @@
           </select>
         </label>
       </div>
-      <Chart v-if="loaded" :data="Object.values(babies)" :labels="Object.keys(babies)" />
-      <h1 v-else>wait ........</h1>
     </div>
   </main>
 </template>
@@ -25,15 +25,21 @@ import Chart from "../components/DoChart.vue";
 import { onMounted, ref, reactive } from "vue";
 const loaded = ref(false);
 let d = reactive([]);
-let data = reactive({});
 const babies = ref(null); //data
 let years = []; //Array for all years for dropdown select
 const selectyear = ref("nuhuh"); //Selection V-model stuff
 
 async function rechart() {
-  data = {}; //empty data
-  babies.value = {};
   loaded.value = false;
+  var props = Object.getOwnPropertyNames(babies);
+  for (var i = 0; i < props.length; i++) {
+    delete babies[props[i]];
+  }
+
+  for (var key in babies) {
+    delete babies[key];
+  }
+
   console.log(selectyear.value);
   if (selectyear.value === "nuhuh") {
     d = await fetchDataNorm();
@@ -41,16 +47,14 @@ async function rechart() {
     d = await fetchData(selectyear.value);
   }
   console.log(d);
-  /*   d.forEach((baby) => {
-    data[baby.race_or_ethnicity_of_mother] ??= [];
-    data[baby.race_or_ethnicity_of_mother].push(baby);
-  });
-  console.log(data); */
   d.forEach((baby) => {
     babies[baby.race_or_ethnicity_of_mother] ??= 0;
     babies[baby.race_or_ethnicity_of_mother] += Number(baby.births);
   });
   console.log(babies);
+  console.log(Object.keys(babies));
+  console.log(Object.values(babies));
+  delete babies.__v_isRef;
   loaded.value = true;
 }
 

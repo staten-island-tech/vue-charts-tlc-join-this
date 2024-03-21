@@ -10,7 +10,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default {
-  name: "Doughnut",
+  name: "Pie",
   components: { Pie },
   props: {
     data: Array,
@@ -19,11 +19,13 @@ export default {
   data() {
     return {
       chartData: {
-        labels: ["White", "Other", "Hispanic", "Black", "Asian / Pacific Islander", "Unknown"],
+        labels: this.labels,
         datasets: [
           {
             data: this.data,
             label: "Babies",
+            hoverOffset: 4,
+            backgroundColor: ["#1b1c6b", "#1e0f53", "#2539bd", "#5055b6", "#848bf2", "#a6b0fe"],
           },
         ],
       },
