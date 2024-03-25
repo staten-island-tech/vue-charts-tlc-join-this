@@ -54,7 +54,6 @@ async function rechart() {
   console.log(babies);
   console.log(Object.keys(babies));
   console.log(Object.values(babies));
-  delete babies.__v_isRef;
   loaded.value = true;
 }
 
