@@ -1,10 +1,10 @@
 <template>
-  <Props :chartData="" :chartOptions="" />
+  <TLC />
 </template>
 
 <script>
-import Props from "../components/Props.vue";
-import { ref, reactive } from "vue";
+import TLC from "../components/Props.vue";
+import { ref, reactive, onMounted } from "vue";
 
 let list2 = [];
 const valueList = new Set();
@@ -50,9 +50,15 @@ console.log(birthYear, babiesBorn);
 
 valueList.forEach((add) => filterByYear(data, add));
 
-const object1 = reactive({
-  labels: birthYear,
-  data: babiesBorn,
+onMounted(() => {
+  const object1 = reactive({
+    labels: birthYear,
+    datasets: [{ data: babiesBorn }],
+  });
+
+  const object2 = reactive({
+    responsive: true,
+  });
 });
 </script>
 
