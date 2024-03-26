@@ -1,9 +1,17 @@
 @import './base.css';
 
+*, 
+body{
+  margin: 0px;
+  padding: 0px;
+}
+
+
+
 #app {
-  max-width: 1280px;
+  width: 1920px;
+  height: 750px;
   margin: 0 auto;
-  padding: 2rem;
   font-weight: normal;
 }
 
