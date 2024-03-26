@@ -1,8 +1,11 @@
 <template>
-  <div></div>
+  <Props :chartData="" :chartOptions="" />
 </template>
 
 <script>
+import Props from "../components/Props.vue";
+import { ref, reactive } from "vue";
+
 let list2 = [];
 const valueList = new Set();
 let data = null;
@@ -46,6 +49,11 @@ console.log(valueList);
 console.log(birthYear, babiesBorn);
 
 valueList.forEach((add) => filterByYear(data, add));
+
+const object1 = reactive({
+  labels: birthYear,
+  data: babiesBorn,
+});
 </script>
 
 <style scoped></style>
