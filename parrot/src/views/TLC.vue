@@ -1,17 +1,22 @@
 <template>
-  <TLC />
+  <p>{{ loaded ? "true 👍" : "false 👎" }}</p>
+  <TLC v-if="loaded" :chartData="object1" :chartOptions="object2" />
 </template>
 
-<script>
+<script setup>
 import TLC from "../components/Props.vue";
 import { ref, reactive, onMounted } from "vue";
 
 let list2 = [];
+const loaded = ref(false);
 const valueList = new Set();
 let data = null;
 let birthYear = [];
 let babiesBorn = [];
+let object1 = reactive({});
+let object2 = reactive({});
 async function getData() {
+  loaded.value = false;
   const response = await fetch("https://data.cityofnewyork.us/resource/wffy-3iyg.json");
   data = await response.json();
   console.log(data);
@@ -41,24 +46,34 @@ function filterByYear(list, value) {
   birthYear.push(value);
   babiesBorn.push(babies);
 }
-await getData();
+async function createAll() {
+  await getData();
 
-data.forEach((sort) => createSet(sort, valueList));
-console.log(valueList);
+  data.forEach((sort) => createSet(sort, valueList));
+  console.log(valueList);
 
-console.log(birthYear, babiesBorn);
+  console.log(birthYear, babiesBorn);
 
-valueList.forEach((add) => filterByYear(data, add));
+  valueList.forEach((add) => filterByYear(data, add));
 
-onMounted(() => {
-  const object1 = reactive({
+  object1 = {
     labels: birthYear,
-    datasets: [{ data: babiesBorn }],
-  });
+    datasets: [
+      {
+        data: babiesBorn,
+        label: "Babies Born By Year",
+      },
+    ],
+  };
 
-  const object2 = reactive({
+  object2 = {
     responsive: true,
-  });
+  };
+  loaded.value = true;
+}
+
+onMounted(async () => {
+  await createAll();
 });
 </script>
 
