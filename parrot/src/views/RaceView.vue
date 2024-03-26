@@ -1,5 +1,7 @@
 <template>
   <main>
+    <h1 style="text-align: center">Tiger Cat</h1>
+
     <div class="big">
       <Chart v-if="loaded" :data="Object.values(babies)" :labels="Object.keys(babies)" />
       <h1 v-else>wait ........</h1>

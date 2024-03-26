@@ -14,10 +14,10 @@ export default {
   data() {
     return {
       chartData: {
-        labels: ["lawrence", "tian lang chen", "jay"],
+        labels: ["Lawrence Wolfeschlegelstein Jr.", "Tian Lian Chen", "J"],
         datasets: [
           {
-            data: [1, 200, 2],
+            data: [99, 200, 25],
             label: "jump height in cm",
             borderWidth: 2,
             borderColor: "red",
