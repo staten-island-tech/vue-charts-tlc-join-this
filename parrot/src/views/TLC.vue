@@ -1,6 +1,7 @@
 <template>
   <p>{{ loaded ? "true 👍" : "false 👎" }}</p>
   <TLC v-if="loaded" :chartData="object1" :chartOptions="object2" />
+  <h1 v-else>wait ........</h1>
 </template>
 
 <script setup>
