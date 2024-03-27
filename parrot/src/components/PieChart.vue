@@ -1,6 +1,6 @@
 <template>
   <main>
-    <Pie id="my-chart-id" :options="chartOptions" :data="chartData" />
+    <Pie id="pie-chart" :options="chartOptions" :data="chartData" aria-label="the chart" />
   </main>
 </template>
 
@@ -30,6 +30,7 @@ export default {
       },
       chartOptions: {
         responsive: true,
+        events: ["mousemove", "mouseout", "touchmove"],
       },
       plugins: {
         colors: { enabled: true, forceOverride: true },
