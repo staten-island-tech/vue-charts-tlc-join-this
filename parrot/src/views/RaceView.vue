@@ -1,7 +1,6 @@
 <template>
   <main>
     <h1 style="text-align: center">Tiger Cat</h1>
-
     <div class="big">
       <Chart v-if="loaded" :data="Object.values(babies)" :labels="Object.keys(babies)" />
       <h1 v-else>wait ........</h1>
@@ -32,7 +31,6 @@ let years = []; //Array for all years for dropdown select
 const selectyear = ref("nuhuh"); //Selection V-model stuff
 
 async function rechart() {
-  loaded.value = false;
   var props = Object.getOwnPropertyNames(babies);
   for (var i = 0; i < props.length; i++) {
     delete babies[props[i]];
@@ -79,6 +77,7 @@ async function fetchData(year) {
 }
 
 onMounted(async () => {
+  loaded.value = false;
   const fetchYears = await fetch(
     "https://data.cityofnewyork.us/resource/wffy-3iyg.json?$query=SELECT%20%60birth_year%60%0AGROUP%20BY%20%60birth_year%60%0AORDER%20BY%20%60birth_year%60%20ASC%20NULL%20LAST"
   );
