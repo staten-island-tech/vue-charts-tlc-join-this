@@ -4,9 +4,15 @@ import BarChart from "../components/BarChart.vue";
 
 <template>
   <main>
-    <br />
-    <br />
-    <h1 style="text-align: center">TLC is an anomaly.</h1>
+    <h1>TLC is an anomaly.</h1>
+    <h2>(use the sidebar to get to the actual api charts)</h2>
     <BarChart />
   </main>
 </template>
+
+<style scoped>
+h1,
+h2 {
+  text-align: center;
+}
+</style>

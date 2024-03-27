@@ -1,15 +1,14 @@
 <template>
   <main>
-    <h1>{{ this.getTianLength }}</h1>
     <Pie id="my-chart-id" :options="chartOptions" :data="chartData" />
   </main>
 </template>
 
 <script>
 import { Pie } from "vue-chartjs";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Colors } from "chart.js";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend, Colors);
 
 export default {
   name: "PieChart",
@@ -32,10 +31,13 @@ export default {
       chartOptions: {
         responsive: true,
       },
-      plugins: {},
+      plugins: {
+        colors: { enabled: true, forceOverride: true },
+      },
     };
   },
   computed: {
+    // comedy
     getTianLength() {
       return `tian lang says the length is ${this.data.length}0`;
     },

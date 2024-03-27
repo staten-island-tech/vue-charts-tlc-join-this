@@ -22,41 +22,42 @@ let data = reactive({});
 const babies = ref(null);
 let babyNames = reactive([]);
 let years = reactive([]);
-const nm = ref("");
+const url = new URL(document.location);
+const nm = ref(url.searchParams.has("name") ? url.searchParams.get("name").toUpperCase() : "");
 
 async function reload() {
   loaded.value = false;
-  console.log(nm.value);
+
+  const params = url.searchParams;
+  if (!params.get("name") || params.get("name").toUpperCase() !== nm.value.toUpperCase()) {
+    params.set("name", nm.value);
+    window.location = url.pathname + "?" + params.toString();
+    return;
+  }
   const d = await fetchData(nm.value);
   countRaces(d);
-  console.log(data);
   loaded.value = true;
 }
 
 async function fetchData(name) {
-  try {
-    const fData = await fetch(
-      `https://data.cityofnewyork.us/resource/25th-nujf.json?$query=SELECT%20%60brth_yr%60%2C%20%60gndr%60%2C%20%60ethcty%60%2C%20%60nm%60%2C%20%60cnt%60%2C%20%60rnk%60%0AWHERE%20caseless_eq(%60nm%60%2C%20%22${name}%22)%0AORDER%20BY%0A%20%20%60brth_yr%60%20DESC%20NULL%20FIRST%2C%0A%20%20%60gndr%60%20ASC%20NULL%20LAST%2C%0A%20%20%60ethcty%60%20ASC%20NULL%20LAST%2C%0A%20%20%60rnk%60%20ASC%20NULL%20LAST`
-    );
+  const fData = await fetch(
+    `https://data.cityofnewyork.us/resource/25th-nujf.json?$query=SELECT%20%60brth_yr%60%2C%20%60gndr%60%2C%20%60ethcty%60%2C%20%60nm%60%2C%20%60cnt%60%2C%20%60rnk%60%0AWHERE%20caseless_eq(%60nm%60%2C%20%22${name}%22)%0AORDER%20BY%0A%20%20%60brth_yr%60%20DESC%20NULL%20FIRST%2C%0A%20%20%60gndr%60%20ASC%20NULL%20LAST%2C%0A%20%20%60ethcty%60%20ASC%20NULL%20LAST%2C%0A%20%20%60rnk%60%20ASC%20NULL%20LAST`
+  );
 
-    const jData = await fData.json();
-    if (jData.hasOwnProperty("error")) {
-      throw new Error(`api error :( - ${jData.message}`);
-    }
-    const nameMap = {
-      "ASIAN AND PACI": "ASIAN AND PACIFIC ISLANDER",
-      "BLACK NON HISP": "BLACK NON HISPANIC",
-      "WHITE NON HISP": "WHITE NON HISPANIC",
-    };
-    jData.forEach((baby) => {
-      baby.nm = baby.nm.toUpperCase();
-      baby.ethcty = nameMap[baby.ethcty] ?? baby.ethcty;
-    });
-    return jData;
-  } catch (e) {
-    // probably should have better error handling
-    alert(`SOMETHING WENT WRONG. CALL FRED ${e}`);
+  const jData = await fData.json();
+  if (jData.hasOwnProperty("error")) {
+    throw new Error(`api error :( - ${jData.message}`);
   }
+  const nameMap = {
+    "ASIAN AND PACI": "ASIAN AND PACIFIC ISLANDER",
+    "BLACK NON HISP": "BLACK NON HISPANIC",
+    "WHITE NON HISP": "WHITE NON HISPANIC",
+  };
+  jData.forEach((baby) => {
+    baby.nm = baby.nm.toUpperCase();
+    baby.ethcty = nameMap[baby.ethcty] ?? baby.ethcty;
+  });
+  return jData;
 }
 
 function countRaces(nmData) {
@@ -80,10 +81,9 @@ onMounted(async () => {
   years = yearData.map((year) => Number(year.brth_yr)).sort((a, b) => a - b);
 
   babyNames = Array.from(new Set((await getValuesOfColumn("nm")).map((name) => name.nm.toUpperCase()))).sort();
-  if (!nm.value) {
-    console.log("there is no name");
+
+  if (!nm.value || !babyNames.includes(nm.value)) {
     nm.value = babyNames[0];
-    console.log("selected", nm.value);
   }
 
   await reload();
