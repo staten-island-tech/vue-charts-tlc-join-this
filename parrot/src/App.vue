@@ -12,7 +12,7 @@ import { RouterLink, RouterView } from "vue-router";
     </pre>
     <nav>
       <RouterLink to="/">TLC jumps high</RouterLink>
-      <RouterLink to="/race">Babies by Ethnicity</RouterLink>
+      <RouterLink to="/raceview">Babies by Ethnicity</RouterLink>
       <RouterLink to="/babynames">Ethnicity of baby names</RouterLink>
     </nav>
   </div>
