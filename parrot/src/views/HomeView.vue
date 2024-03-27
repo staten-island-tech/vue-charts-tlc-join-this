@@ -1,11 +1,12 @@
 <script setup>
-import PieChart from "../components/PieChart.vue";
-const names = ["Lawrence", "Tian Lang", "Jay"];
-const data = [1, 50, 2];
+import BarChart from "../components/BarChart.vue";
 </script>
 
 <template>
   <main>
-    <PieChart :labels="names" :data="data" />
+    <br />
+    <br />
+    <h1 style="text-align: center">TLC is an anomaly.</h1>
+    <BarChart />
   </main>
 </template>
