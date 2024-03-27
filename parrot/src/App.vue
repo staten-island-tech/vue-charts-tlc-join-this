@@ -4,13 +4,13 @@ import { RouterLink, RouterView } from "vue-router";
 
 <template>
   <div class="sidebar">
+    <pre>
+      ⠀  ／l、
+       （ﾟ､ ｡ ７ tiger cat
+      ⠀ l、ﾞ ~ヽ
+         じしf_, )ノ
+    </pre>
     <nav>
-      <pre>
-        ⠀  ／l、
-         （ﾟ､ ｡ ７ tiger cat
-        ⠀ l、ﾞ ~ヽ
-           じしf_, )ノ
-      </pre>
       <RouterLink to="/">TLC jumps high</RouterLink>
       <RouterLink to="/race">Babies by Ethnicity</RouterLink>
       <RouterLink to="/babynames">Ethnicity of baby names</RouterLink>
