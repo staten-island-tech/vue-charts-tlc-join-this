@@ -13,8 +13,14 @@ export default {
   name: "Donut",
   components: { Doughnut },
   props: {
-    data: Array,
-    labels: Array,
+    data: {
+      type: Array,
+      required: true,
+    },
+    labels: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {

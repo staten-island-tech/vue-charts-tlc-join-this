@@ -26,7 +26,7 @@ import Chart from "../components/DoChart.vue";
 import { onMounted, ref, reactive } from "vue";
 const loaded = ref(false);
 let d = reactive([]);
-const babies = ref(null); //data
+const babies = ref(); //data
 let years = []; //Array for all years for dropdown select
 const selectyear = ref("nuhuh"); //Selection V-model stuff
 
@@ -78,6 +78,7 @@ async function fetchData(year) {
 
 onMounted(async () => {
   loaded.value = false;
+  selectyear.value = "nuhuh";
   const fetchYears = await fetch(
     "https://data.cityofnewyork.us/resource/wffy-3iyg.json?$query=SELECT%20%60birth_year%60%0AGROUP%20BY%20%60birth_year%60%0AORDER%20BY%20%60birth_year%60%20ASC%20NULL%20LAST"
   );
