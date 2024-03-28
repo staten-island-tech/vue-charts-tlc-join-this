@@ -14,6 +14,7 @@ import { RouterLink, RouterView } from "vue-router";
       <RouterLink to="/">TLC jumps high</RouterLink>
       <RouterLink to="/race">Babies by Ethnicity</RouterLink>
       <RouterLink to="/babynames">Ethnicity of baby names</RouterLink>
+      <RouterLink to="/babiesoftlc">TLC's babies</RouterLink>
     </nav>
   </div>
   <div class="chartwrap">
